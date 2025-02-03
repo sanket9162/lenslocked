@@ -2,52 +2,29 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
-	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/sanket9162/lenslocked/controllers"
+	"github.com/sanket9162/lenslocked/templates"
 	"github.com/sanket9162/lenslocked/views"
 )
 
-func executeTemplate(w http.ResponseWriter, filepath string){
 
-	t , err := views.Parse(filepath)
-	if err != nil{
-		log.Printf("parsing template : %v", err)
-		http.Error(w, "There was an error parsing the template.", http.StatusInternalServerError)
-		return
-	}
 
-	t.Execute(w, nil)
-}
 
-func homeHandler(w http.ResponseWriter, r *http.Request){
-	tplPath := filepath.Join("templates", "home.gohtml")
-	executeTemplate(w, tplPath)
-}
-
-func contactHandler(w http.ResponseWriter, r *http.Request){
-
-	tplPath := filepath.Join("templates", "contact.gohtml")
-	executeTemplate(w, tplPath)
-}
-
-func faqHandler(w http.ResponseWriter, r *http.Request){
-	tplPath := filepath.Join("templates", "faq.gohtml")
-	executeTemplate(w, tplPath)
-
-}
 
 func notFound(w http.ResponseWriter, r *http.Request){
 	http.Error(w, "Page not Found", http.StatusNotFound)
 }
 
+
+
 func main(){
 	r := chi.NewRouter()
-	r.Get("/", homeHandler)
-	r.Get("/contact", contactHandler)
-	r.Get("/faq", faqHandler)
+	r.Get("/", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "home.gohtml"))))
+	r.Get("/contact", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "contact.gohtml"))))
+	r.Get("/faq", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "faq.gohtml"))))
 	r.NotFound(notFound)
 
 
