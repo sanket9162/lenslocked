@@ -3,12 +3,15 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/sanket9162/lenslocked/models"
 )
 
 type Users struct{
 	Templates struct {
 		New Template
 	}
+	USerService *models.USerService
 }
 
 func (u Users) New(w http.ResponseWriter, r *http.Request){
