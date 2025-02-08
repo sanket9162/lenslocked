@@ -3,10 +3,12 @@ package models
 import (
 	"database/sql"
 	"fmt"
+
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 func Open(config PostgresConfig) (*sql.DB ,error){
-	db, err := sql.Open("pxg", config.String())
+	db, err := sql.Open("pgx", config.String())
 	if err != nil{
 		return nil, fmt.Errorf("open: %w", err)
 	}
@@ -16,7 +18,7 @@ func Open(config PostgresConfig) (*sql.DB ,error){
 func DefaultPostgresConfig() PostgresConfig{
 	return PostgresConfig{
 		Host: "localhost",
-		Port: "5232",
+		Port: "5432",
 		User: "baloo",
 		Password: "junglebook",
 		Database: "lenslocked",
