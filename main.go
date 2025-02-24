@@ -29,7 +29,7 @@ func main(){
 		panic(err)
 	} 
 	defer db.Close()
-	userService := models.USerService{
+	userService := models.UserService{
 		DB: db,
 	}
 
@@ -39,11 +39,15 @@ func main(){
 	r.Get("/faq", controllers.FAQ(views.Must(views.ParseFS(templates.FS, "faq.gohtml", "tailwind.gohtml"))))
 
 	userC :=  controllers.Users{
-		USerService: &userService,
+		UserService: &userService,
 	}
 	userC.Templates.New = views.Must(views.ParseFS(templates.FS,"signup.gohtml", "tailwind.gohtml" ))
+	userC.Templates.SignIn  = views.Must(views.ParseFS(templates.FS,"signin.gohtml", "tailwind.gohtml" ))
+
 	r.Get("/signup", userC.New)
 	r.Post("/users", userC.Create)
+	r.Get("/signin", userC.SignIn)
+	r.Post("/signin", userC.ProcessSignIn)
 
 
 	r.NotFound(notFound)
