@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/gorilla/csrf"
 	"github.com/sanket9162/lenslocked/controllers"
 	"github.com/sanket9162/lenslocked/models"
 	"github.com/sanket9162/lenslocked/templates"
@@ -49,12 +50,16 @@ func main(){
 	r.Get("/signin", userC.SignIn)
 	r.Post("/signin", userC.ProcessSignIn)
 	r.Get("/users/me", userC.CurrentUser)
-
-
 	r.NotFound(notFound)
 
 
+	csrfKey := "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX"
+	csrfMw := csrf.Protect(
+		[]byte(csrfKey),
+		// TODO: Fix this before deploying
+		csrf.Secure(false),
+	)
 	fmt.Println("staring the server on :3000")
-	http.ListenAndServe(":3000",r)
+	http.ListenAndServe(":3000",csrfMw(r))
 
 }
