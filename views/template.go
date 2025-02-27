@@ -20,7 +20,15 @@ func Must(t Template, err error) Template {
 }
 
 func ParseFS(fs fs.FS, pattern ...string) (Template, error) {
-	 tpl, err := template.ParseFS(fs, pattern...)
+	tpl := template.New(pattern[0])
+	tpl = tpl.Funcs(
+		template.FuncMap{
+			"csrfFeild": func() template.HTML {
+				return `<input type="hidden"/>`
+			},
+		},
+	)
+	tpl, err := tpl.ParseFS(fs, pattern...)
 	 if err != nil{
 		return Template{}, fmt.Errorf("parsing template: %w", err)
 	}
@@ -29,20 +37,6 @@ func ParseFS(fs fs.FS, pattern ...string) (Template, error) {
 		htmlTpl:tpl,
 	}, nil
 }
-
-
-func Parse(filepath string)(Template, error){
-	tpl, err := template.ParseFiles(filepath)
-	if err != nil{
-		return Template{}, fmt.Errorf("parsing template: %w", err)
-	}
-
-	return Template{
-		htmlTpl:tpl,
-	}, nil
-
-}
-
 
 func (t Template) Execute (w http.ResponseWriter, data interface{}){
 	w.Header().Set("content-Type", "text/html; charset=utf-8")
