@@ -30,7 +30,7 @@ const (
 	if bytesPerToken < MinBytesPerToken{
 		bytesPerToken = MinBytesPerToken
 	}
-	token, err := rand.String(bytesPerToken)
+	token, err := rand.String(bytesPerToken) 
 	if err != nil {
 		return nil, fmt.Errorf("create: %w", err)
 	}
@@ -38,6 +38,14 @@ const (
 		UserID: userID,
 		Token: token,
 		TokenHash: ss.hash(token),
+	}
+	row := ss.DB.QueryRow(`
+	INSERT INTO sessions (user_id, token_hash)
+	VALUES ($1, $2)
+	RETURNING id`, session.UserID, session.TokenHash)
+	err = row.Scan(&session.ID)
+	if err != nil {
+		return nil, fmt.Errorf("create: %w", err)
 	}
 	return &session,nil
  } 
