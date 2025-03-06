@@ -62,6 +62,9 @@ func main(){
 	r.Get("/users/me", userC.CurrentUser)
 	r.NotFound(notFound)
 
+	umw := controllers.Usermiddleware{
+		SessionService: &sessionService,
+	}
 
 	csrfKey := "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX"
 	csrfMw := csrf.Protect(
@@ -70,6 +73,6 @@ func main(){
 		csrf.Secure(false),
 	)
 	fmt.Println("staring the server on :3000")
-	http.ListenAndServe(":3000",csrfMw(r))
+	http.ListenAndServe(":3000",csrfMw(umw.SetUser(r)))
 
 }
