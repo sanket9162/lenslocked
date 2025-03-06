@@ -80,10 +80,6 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request){
 
 func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request){
 	user := context.USer(r.Context())
-	if user == nil{
-		http.Redirect(w, r, "/signin", http.StatusFound)
-		return
-	}
 	fmt.Fprintf(w, "current user: %s\n", user.Email)
 
 }
@@ -126,4 +122,15 @@ func (umw Usermiddleware) SetUser(next http.Handler) http.Handler {
 	next.ServeHTTP(w, r)
 	})
 
+}
+
+func (umw Usermiddleware) RequestUser(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+		user := context.USer(r.Context())
+		if user == nil {
+			http.Redirect(w, r, "/signin", http.StatusFound)
+			return
+		}
+		next.ServeHTTP(w,r)
+	})
 }
