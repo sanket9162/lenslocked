@@ -124,7 +124,7 @@ func main(){
 	r.Post("/signin", userC.ProcessSignIn)
 	r.Post("/signout", userC.ProcessSignOut)
 	r.Get("/forgot-pw", userC.ForgotPassword)
-	r.Post("/forgot-pw", userC.ProcessForgetPassword)
+	r.Post("/forgot-pw", userC.ProcessForgotPassword)
 	r.Get("/reset-pw", userC.ResetPassword)
 	r.Post("/reset-pw", userC.ProcessResetPassword)
 	r.Route("/users/me", func(r chi.Router){
