@@ -37,14 +37,14 @@ func loadEnvConfig() (config, error){
 	//TODO : Read all values from an env variable
 	cfg.PSQL = models.DefaultPostgresConfig()
 
-	cfg.SMTP.Host = os.Getenv("SMTP_HOST")
+	cfg.SMTP.Host = os.Getenv("SMPT_HOST")
 	portStr := os.Getenv("SMPT_PORT")
 	cfg.SMTP.Port, err = strconv.Atoi(portStr)
 	if err != nil{
 		return cfg, err
 	}
-	cfg.SMTP.Username = os.Getenv("SMTP_USERNAME")
-	cfg.SMTP.Password = os.Getenv("SMTP_PASSWORD")
+	cfg.SMTP.Username = os.Getenv("SMPT_USERNAME")
+	cfg.SMTP.Password = os.Getenv("SMPT_PASSWORD")
 
 
 	cfg.CSRF.Key = "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX"
