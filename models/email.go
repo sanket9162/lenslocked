@@ -26,7 +26,7 @@ type SMPTConfig struct{
 }
 
 func NewEmailService(config SMPTConfig) *EmailService{
-	es :=EmailService{
+	es := EmailService{
 		dialer: mail.NewDialer(config.Host, config.Port, config.Username, config.Password),
 	}
 	return &es
@@ -59,32 +59,30 @@ func (es *EmailService) Send(email Email)error{
 	return nil
 }
 
-func (es *EmailService) ForgetPassword(to,resetUrl string) error {
-email := Email{
-	Subject: "Reset your password",
-	To: to,
-	Plaintext: "To reset your password, plase visit the following link: " + resetUrl,
-	HTML: `<p>TO reset password, plase visit the following link: <a herf="` + resetUrl +`"> `+ resetUrl +` </a><p>`,
+func (es *EmailService) ForgotPassword(to, resetURL string) error {
+	email := Email{
+		Subject:   "Reset your password",
+		To:        to,
+		Plaintext: "To reset your password, please visit the following link: " + resetURL,
+		HTML:      `<p>To reset your password, please visit the following link: <a href="` + resetURL + `">` + resetURL + `</a></p>`,
+	}
+	err := es.Send(email)
+	if err != nil {
+		return fmt.Errorf("forgot password email: %w", err)
+	}
+	return nil
 }
-err := es.Send(email)
-if err != nil {
-	return fmt.Errorf("formget password email: %w", err)
-}
-return nil
-
-}
 
 
-func (es *EmailService) setFrom(msg *mail.Message, email Email){
+func (es *EmailService) setFrom(msg *mail.Message, email Email) {
 	var from string
-	switch{
-	case email.From !="":
+	switch {
+	case email.From != "":
 		from = email.From
 	case es.DefaultSender != "":
 		from = es.DefaultSender
 	default:
-		from = es.DefaultSender
+		from = DefaultSender
 	}
 	msg.SetHeader("From", from)
-
 }
