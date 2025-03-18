@@ -38,7 +38,7 @@ func loadEnvConfig() (config, error){
 	cfg.PSQL = models.DefaultPostgresConfig()
 
 	cfg.SMTP.Host = os.Getenv("SMTP_HOST")
-	portStr := os.Getenv("SMTP_PORT")
+	portStr := os.Getenv("SMPT_PORT")
 	cfg.SMTP.Port, err = strconv.Atoi(portStr)
 	if err != nil{
 		return cfg, err
@@ -104,6 +104,8 @@ func main(){
 	userC.Templates.New = views.Must(views.ParseFS(templates.FS,"signup.gohtml", "tailwind.gohtml" ))
 	userC.Templates.SignIn  = views.Must(views.ParseFS(templates.FS,"signin.gohtml", "tailwind.gohtml" ))
 	userC.Templates.ForgotPassword  = views.Must(views.ParseFS(templates.FS,"forgot-pw.gohtml", "tailwind.gohtml" ))
+	userC.Templates.CheckYourEmail  = views.Must(views.ParseFS(templates.FS,"check-your-email.gohtml", "tailwind.gohtml" ))
+
 
 	
 
