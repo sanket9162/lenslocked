@@ -2,6 +2,7 @@ package views
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"html/template"
 	"io"
@@ -13,6 +14,13 @@ import (
 	"github.com/sanket9162/lenslocked/context"
 	"github.com/sanket9162/lenslocked/models"
 )
+
+type public interface {
+	Public() string
+}
+
+
+
 type Template struct {
 	htmlTpl *template.Template
 }
@@ -59,6 +67,7 @@ func (t Template) Execute (w http.ResponseWriter, r *http.Request, data interfac
 		http.Error(w, "There was an error rendering the page.", http.StatusInternalServerError)
 		return
 	}
+	errMsgs := errMessages(errs...)
 	tpl = tpl.Funcs(
 		template.FuncMap{
 			"csrfFeild": func() template.HTML {
@@ -68,11 +77,7 @@ func (t Template) Execute (w http.ResponseWriter, r *http.Request, data interfac
 				return context.User(r.Context())
 			},
 			"errors": func() []string{
-				var errMessages []string
-				for _, err := range errs{
-					errMessages = append(errMessages, err.Error())
-				}
-				return errMessages
+				return errMsgs
 			},
 		},
 	)
@@ -85,4 +90,17 @@ func (t Template) Execute (w http.ResponseWriter, r *http.Request, data interfac
 		return 
 	}
 	io.Copy(w, &buf)
+}
+
+func errMessages(errs ...error)[]string{
+	var msg []string
+	for _, err := range errs{
+		var pubErr public
+		if errors.As(err, &pubErr){
+			msg = append(msg, pubErr.Public())
+		} else {
+			msg = append(msg, "something went wrong.")
+		}
+	}
+	return msg
 }
