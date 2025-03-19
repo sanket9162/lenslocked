@@ -35,6 +35,13 @@ func ParseFS(fs fs.FS, pattern ...string) (Template, error) {
 			"currentUser": func() (template.HTML, error) {
 				return "", fmt.Errorf("csrfField not implemented")
 			},
+			"errors": func() []string{
+				return []string{
+					"Don't do that!",
+					"This email address you provided is already associated with an account.",
+					"Something went wrong.",
+				}
+			},
 		},
 	)
 	tpl, err := tpl.ParseFS(fs, pattern...)
