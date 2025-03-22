@@ -62,7 +62,7 @@ func (service *GalleryService) ByUserId(userId int) ([]Gallery, error){
 		gallery := Gallery{
 			UserID: userId,
 		}
-		err = rows.Scan(&gallery.ID, gallery.Title)
+		err = rows.Scan(&gallery.ID, &gallery.Title)
 		if err != nil {
 			return nil, fmt.Errorf("query galleries by user: %w", err )
 		}
