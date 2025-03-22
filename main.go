@@ -95,6 +95,7 @@ func main(){
 	csrfMw := csrf.Protect(
 		[]byte(cfg.CSRF.Key),
 		csrf.Secure(cfg.CSRF.Secure),
+		csrf.Path("/"),
 	)
 
 	//Setup controllers
@@ -141,7 +142,12 @@ func main(){
 		r.Use(umw.RequestUser)
 		r.Get("/", userC.CurrentUser)
 	})
-	r.Get("/galleries/new", galleriesC.New)
+	r.Route("/galleries/", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			r.Use(umw.RequestUser)
+			r.Get("/new", galleriesC.New)
+		})
+	})
 	
 	r.NotFound(func(w http.ResponseWriter, r *http.Request){
 		http.Error(w, "Page not Found", http.StatusNotFound)
