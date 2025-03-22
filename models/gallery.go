@@ -16,17 +16,16 @@ type GalleryService struct{
 	DB *sql.DB
 }
 
-func (service *GalleryService) Create(title string, userID int)(*Gallery, error){
+func (service *GalleryService) Create(title string, userID int) (*Gallery, error) {
 	gallery := Gallery{
-		Title: title,
+		Title:  title,
 		UserID: userID,
 	}
-
 	row := service.DB.QueryRow(`
-	INSERT INTO galleries (title, user_id)
-	VALUES ($1, $2) RETURNING id;`, gallery.Title, gallery.UserID)
-	err := row.Scan(&gallery)
-	if err != nil{
+		INSERT INTO galleries (title, user_id)
+		VALUES ($1, $2) RETURNING id;`, gallery.Title, gallery.UserID)
+	err := row.Scan(&gallery.ID)
+	if err != nil {
 		return nil, fmt.Errorf("create gallery: %w", err)
 	}
 	return &gallery, nil

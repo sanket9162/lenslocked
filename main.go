@@ -113,10 +113,7 @@ func main(){
 	userC.Templates.ForgotPassword  = views.Must(views.ParseFS(templates.FS,"forgot-pw.gohtml", "tailwind.gohtml" ))
 	userC.Templates.CheckYourEmail  = views.Must(views.ParseFS(templates.FS,"check-your-email.gohtml", "tailwind.gohtml" ))
 	userC.Templates.ResetPassword  = views.Must(views.ParseFS(templates.FS,"reset-pw.gohtml", "tailwind.gohtml" ))
-	galleriesC.Templates.New = views.Must(views.ParseFS(
-		templates.FS,
-		"galleries/new.gohtml", "tailwind.gohtml",
-	))
+	galleriesC.Templates.New = views.Must(views.ParseFS(templates.FS,"galleries/new.gohtml", "tailwind.gohtml",))
 
 
 
@@ -142,10 +139,11 @@ func main(){
 		r.Use(umw.RequestUser)
 		r.Get("/", userC.CurrentUser)
 	})
-	r.Route("/galleries/", func(r chi.Router) {
+	r.Route("/galleries", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(umw.RequestUser)
 			r.Get("/new", galleriesC.New)
+			r.Post("/", galleriesC.Create)
 		})
 	})
 	
