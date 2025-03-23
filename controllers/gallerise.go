@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -195,6 +196,31 @@ func(g Galleries) Images(w http.ResponseWriter, r *http.Request){
 	}
 
 	http.ServeFile(w, r, image.Path)
+}
+
+func(g Galleries) UploadImages(w http.ResponseWriter, r *http.Request){
+	gallery, err := g.galleryById(w, r, userMustOwnGallery)
+	if err != nil {
+		return
+	}
+	err = r.ParseMultipartForm(5 << 20) // 5mb
+	if err != nil {
+		http.Error(w, "Something went wrong", http.StatusInternalServerError)
+		return
+	}
+	fileHeaders := r.MultipartForm.File["images"]
+	for _, fileHeader := range fileHeaders {
+		file, err := fileHeader.Open()
+		if err != nil {
+			http.Error(w, "Something went wrong", http.StatusInternalServerError)
+			return
+		}
+		defer file.Close()
+		
+		fmt.Printf("Attempting to upload %v for fallery %d.\n", fileHeader.Filename, gallery.ID)
+		io.Copy(w, file)
+		return
+	}
 }
 
 func(g Galleries) DeleteImages(w http.ResponseWriter, r *http.Request){
