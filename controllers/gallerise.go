@@ -3,7 +3,6 @@ package controllers
 import (
 	"errors"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"strconv"
 
@@ -54,17 +53,28 @@ func (g Galleries) Show(w http.ResponseWriter, r *http.Request){
 	if err != nil {
 		return
 	}
+	type Image struct{
+		GalleryID int
+		Filename string
+	}
 	var data struct{
 		ID int 
 		Title string
-		Image []string
+		Image []Image
 	}
 	data.ID = gallery.ID
 	data.Title = gallery.Title
-	for i := 1; i < 20 ;i++{
-		w, h := rand.Intn(500)+200, rand.Intn(500)+200
-		catImageURL := fmt.Sprintf("https://placekitten.com/%d/%d", w,h)
-		data.Image = append(data.Image, catImageURL)
+	images, err := g.GalleryService.Image(gallery.ID)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Something went wrong", http.StatusInternalServerError)
+		return
+	}
+	for _, image := range images{
+		data.Image = append(data.Image, Image{
+			GalleryID: image.GalleryID,
+			Filename: image.Filename,
+		})
 	}
 	g.Templates.Show.Execute(w, r, data)
 
