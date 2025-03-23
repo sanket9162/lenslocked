@@ -144,6 +144,7 @@ func (service *GalleryService) Image(galleryID int, filename string)(Images, err
 }
 
 func (service *GalleryService) CreateImage(galleryID int, filename string, contents io.Reader)(error){
+	
 	galleryDir := service.galleryDir(galleryID)
 	err := os.MkdirAll(galleryDir, 0755)
 	if err != nil {
