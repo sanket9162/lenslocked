@@ -3,7 +3,6 @@ package controllers
 import (
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -217,10 +216,14 @@ func(g Galleries) UploadImages(w http.ResponseWriter, r *http.Request){
 		}
 		defer file.Close()
 		
-		fmt.Printf("Attempting to upload %v for fallery %d.\n", fileHeader.Filename, gallery.ID)
-		io.Copy(w, file)
-		return
+		err = g.GalleryService.CreateImage(gallery.ID, fileHeader.Filename, file)
+		if err != nil {
+			http.Error(w, "Something went wrong", http.StatusInternalServerError)
+			return
+		}
 	}
+	editPath := fmt.Sprintf("/galleries/%d/edit", gallery.ID)
+	http.Redirect(w, r, editPath, http.StatusFound)
 }
 
 func(g Galleries) DeleteImages(w http.ResponseWriter, r *http.Request){
