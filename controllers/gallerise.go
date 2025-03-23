@@ -89,13 +89,34 @@ func (g Galleries) Edit(w http.ResponseWriter, r *http.Request){
 	if err != nil {
 		return
 	}
+
+	type Image struct{
+		GalleryID int
+		Filename string
+		FilenameEscaped string
+	}
+
 	var data struct {
 		ID int 
 		Title string
+		Image []Image
 	}
 
 	data.ID = gallery.ID
 	data.Title = gallery.Title
+	images, err := g.GalleryService.Images(gallery.ID)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Something went wrong", http.StatusInternalServerError)
+		return
+	}
+	for _, image := range images{
+		data.Image = append(data.Image, Image{
+			GalleryID: image.GalleryID,
+			Filename: image.Filename,
+			FilenameEscaped: url.PathEscape(image.Filename),
+		})
+	}
 	g.Templates.Edit.Execute(w, r, data)
 
 }

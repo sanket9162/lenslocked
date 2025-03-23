@@ -15,6 +15,16 @@
                  </button>
             </div>
     </form>
+    <div class="py-2">
+        <h2 class="pb-4 text-sm font-semibold text-gray-800">Current Images</h2>
+        <div class="py-2 grid grid-cols-8 gap-2">
+            {{range .Image}}
+            <div class="h-min w-full relative">
+                <img class="w-full" src="/galleries/{{.GalleryID}}/images/{{.FilenameEscaped}}">
+            </div>
+            {{end}}
+        </div>
+    </div>
 
         <div class="py-4">
             <h2>Dangerours Actions</h2>
