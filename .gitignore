@@ -49,3 +49,6 @@ go.work.sum
 
 # env file
 .env
+
+#Images directory
+images/
