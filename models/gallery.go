@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"io/fs"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -105,7 +107,7 @@ func (service *GalleryService) Delete(id int) error{
 	return nil
 }
 
-func(service *GalleryService) Image(galleryID int) ([]Images, error){
+func(service *GalleryService) Images(galleryID int) ([]Images, error){
 	globPattern := filepath.Join(service.galleryDir(galleryID), "*")
 	allFiles, err := filepath.Glob(globPattern)
 	if err != nil{
@@ -122,6 +124,22 @@ func(service *GalleryService) Image(galleryID int) ([]Images, error){
 	}
 	}
 	return images, nil
+}
+
+func (service *GalleryService) Image(galleryID int, filename string)(Images, error){
+	imagePath := filepath.Join(service.galleryDir(galleryID), filename)
+	_, err := os.Stat(imagePath)
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist){
+			return Images{}, ErrNotFound
+		}
+		return Images{}, fmt.Errorf("querying for image: %w", err)
+	}
+	return Images{
+		Filename :filename,
+		GalleryID: galleryID,
+		Path: imagePath,
+	}, nil
 }
 
 func(service *GalleryService) extensions() []string {

@@ -141,7 +141,7 @@ func main(){
 	})
 	r.Route("/galleries", func(r chi.Router) {
 		r.Get("/{id}", galleriesC.Show)
-		r.Get("/{id}/images/{filename}", galleriesC.Image)
+		r.Get("/{id}/images/{filename}", galleriesC.Images)
 		r.Group(func(r chi.Router) {
 			r.Use(umw.RequestUser)
 			r.Get("/", galleriesC.Index)
